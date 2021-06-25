@@ -85,4 +85,5 @@ def validation(rent_amount: int, rent_period: str) -> None:
         raise Exception('Rent amount above maximum')
 
 
-print(int(calculate_membership_fee(280093, 'month', BRANCH_E)))
+if __name__ == '__main__':
+    print(int(calculate_membership_fee(280093, 'month', BRANCH_E)))
