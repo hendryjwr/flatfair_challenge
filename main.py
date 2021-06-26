@@ -28,7 +28,7 @@ class OrganisationUnit:
 
 BRANCH_E = org_config[11]
 
-def calculate_membership_fee(rent_amount: int, rent_period: str, organisation_unit: OrganisationUnit = BRANCH_E) -> int:
+def calculate_membership_fee(rent_amount: int, rent_period: str, organisation_unit: OrganisationUnit = BRANCH_E, organisation_config=org_config) -> int:
     """
     Calculates membership fee. A default OrganisationUnit of BRANCH_E has been set.
 
@@ -54,26 +54,26 @@ def calculate_membership_fee(rent_amount: int, rent_period: str, organisation_un
         rent_amount = round((rent_amount * VAT), 0)
 
     # recursively search tree for fixed_membership_fee
-    fixed_fee = check_for_fixed_fee(organisation_unit)
+    fixed_fee = check_for_fixed_fee(organisation_unit, organisation_config=organisation_config)
 
     if fixed_fee:
         return fixed_fee
 
     return rent_amount
 
-def check_for_fixed_fee(organisation_unit: OrganisationUnit) -> int:
+def check_for_fixed_fee(organisation_unit: OrganisationUnit, organisation_config=org_config) -> int:
     if organisation_unit.config is None:
-        return check_for_fixed_fee(OrganisationUnit(find_organisation_info(organisation_unit.parent)))
+        return check_for_fixed_fee(OrganisationUnit(find_organisation_info(organisation_unit.parent, organisation_config)), organisation_config)
     elif organisation_unit.config.has_fixed_membership_fee:
         return organisation_unit.config.fixed_membership_fee_amount
     elif organisation_unit.parent is None:
         return None
     else:
-        return check_for_fixed_fee(OrganisationUnit(find_organisation_info(organisation_unit.parent)))
+        return check_for_fixed_fee(OrganisationUnit(find_organisation_info(organisation_unit.parent, organisation_config)), organisation_config)
 
-def find_organisation_info(parent):
+def find_organisation_info(parent, organisation_config=org_config):
     """Finds parent's information from config"""
-    for item in org_config:
+    for item in organisation_config:
         if item['name'] == parent:
             return item
 
